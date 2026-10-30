@@ -1,4 +1,4 @@
-# bun-scaffold — build/scan artifacts & deps never tracked
+# eidos — build/scan artifacts & deps never tracked
 node_modules/
 .ffs/
 dist/

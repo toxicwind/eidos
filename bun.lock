@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@estate/bun-scaffold",
+      "name": "@estate/eidos",
       "devDependencies": {
         "@biomejs/biome": "*",
         "@types/bun": "^1.4.0",

@@ -1,6 +1,6 @@
 {
 	"servers": {
-		"DelendAI:estate-bun-scaffold": {
+		"DelendAI:estate-eidos": {
 			"type": "stdio",
 			"command": "bunx",
 			"args": [
@@ -11,7 +11,7 @@
 				"--workspace",
 				"${workspaceFolder}",
 				"--name",
-				"DelendAI:estate-bun-scaffold"
+				"DelendAI:estate-eidos"
 			]
 		}
 	}

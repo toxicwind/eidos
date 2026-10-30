@@ -1,7 +1,7 @@
 ---
 name: delendai-delivery-verifier
 description: Acceptance and gates verifier
-tools: [read, search, edit, execute, todo, DelendAI:estate-bun-scaffold/*]
+tools: [read, search, edit, execute, todo, DelendAI:estate-eidos/*]
 user-invocable: false
 ---
 

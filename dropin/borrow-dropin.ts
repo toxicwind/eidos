@@ -1,6 +1,6 @@
 /**
  * borrow-dropin.ts — BORROW the estate's proven MCP drop-in wiring pattern
- * (from estate-mcp-dropin-ship / mcp-dropin-guide) into bun-scaffold.
+ * (from estate-mcp-dropin-ship / mcp-dropin-guide) into eidos.
  *
  * The estate already SHIPS drop-ins the same way every time — that IS the
  * pattern, and it lives in:
@@ -9,7 +9,7 @@
  *   - the 27 parented products' bunfigs + the 132 infra services in ports.env
  *
  * This borrows that exact sequence into a callable function so a NEW product
- * scaffolded by bun-scaffold gets the drop-in wiring EMITTED, not hand-done:
+ * scaffolded by eidos gets the drop-in wiring EMITTED, not hand-done:
  *
  *   1. ports.env         <NAME>_PORT=<free-25xxx> + owner comment
  *   2. pitchfork.toml    [daemons."<name>-mcp"] (monolith, auto=start, retry)
@@ -42,7 +42,7 @@ export function suggestFreePort(existing: number[] = []): number {
 
 /** Borrowed ports.env stanza (R-301 owner-comment convention). */
 export function portsEnvBlock(spec: DropinSpec): string {
-  return `# owner: ${spec.name} (${spec.name}-mcp drop-in via bun-scaffold)\n${spec.name.toUpperCase()}_PORT=${spec.port}\n`;
+  return `# owner: ${spec.name} (${spec.name}-mcp drop-in via eidos)\n${spec.name.toUpperCase()}_PORT=${spec.port}\n`;
 }
 
 /** Borrowed pitchfork monolith daemon stanza (dashes, auto=start, retry). */

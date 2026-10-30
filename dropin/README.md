@@ -1,6 +1,6 @@
-# ⤵️ dropins guide — bun-scaffold parented drop-ins
+# ⤵️ dropins guide — eidos parented drop-ins
 
-> **A drop-in** = any product/service scaffolded by (or wired through) `bun-scaffold`
+> **A drop-in** = any product/service scaffolded by (or wired through) `eidos`
 > as its parent. This guide lives *in* the scaffold's `dropin/` folder and
 > governs how a drop-in is authored, wired, and certified — borrowed verbatim
 > from the estate's proven patterns (it was not invented; it was found and
@@ -15,12 +15,12 @@ The estate has **two** drop-in senses that share one shape — a thing that
 
 | Sense | Parent | Drop-in | Proof artifacts |
 |---|---|---|---|
-| **Infra service** | bun-scaffold (bunfig) | qdrant / hindsight / kafka / redis / +128 more | `config/ports.env` `*_PORT` |
+| **Infra service** | eidos (bunfig) | qdrant / hindsight / kafka / redis / +128 more | `config/ports.env` `*_PORT` |
 | **MCP server** | thresher gateway | flotilla-mcp, and every `*-mcp` | `pitchfork.toml` daemon + thresher `mcp_config.json` |
 | **Replacement** (strict) | original impl | a rewritten port | `dropin-certification-contract.json` (12 hard gates) |
 
 **Parenting rule:** a drop-in is discovered by the parent, never hand-registered
-twice. bun-scaffold is the parent that *discovers* infra services from
+twice. eidos is the parent that *discovers* infra services from
 `ports.env` and emits the wiring.
 
 ## 2. The four drop-in wiring stanzas (borrowed)
@@ -62,7 +62,7 @@ tinyglobby):
 coverage `lines=90`) — they are the drop-in population under this parent.
 Regenerate with: `bun src/apply-scaffold.ts --dropin --target <dir>`.
 
-## 6. Reference homes — ALL consolidated under bun-scaffold `dropin/` (2026-10-30)
+## 6. Reference homes — ALL consolidated under eidos `dropin/` (2026-10-30)
 
 - **Guides**: `dropin/guides/mcp-dropin-guide/` (MCP drop-in server authoring)
 - **Skill**: `dropin/skill/estate-mcp-dropin-ship/` (ship procedure)
@@ -73,7 +73,7 @@ Regenerate with: `bun src/apply-scaffold.ts --dropin --target <dir>`.
 - SSOT (unchanged, not a drop-in): `estate/docs/mcp-guide-thresher.md`
 
 > Rename note: these were moved `mv` from `pens/guide/`, `.tau/managed-skills/`,
-> and `nim-repos/…/docs/` into bun-scaffold's `dropin/` — their parent is now
+> and `nim-repos/…/docs/` into eidos's `dropin/` — their parent is now
 > the scaffold, matching the parenting doctrine.
 
-Generated 2026-10-30 — drop-in concept consolidated into bun-scaffold.
+Generated 2026-10-30 — drop-in concept consolidated into eidos.

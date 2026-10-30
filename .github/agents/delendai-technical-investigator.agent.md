@@ -1,7 +1,7 @@
 ---
 name: delendai-technical-investigator
 description: Focused technical investigation
-tools: [read, search, edit, execute, todo, DelendAI:estate-bun-scaffold/*]
+tools: [read, search, edit, execute, todo, DelendAI:estate-eidos/*]
 user-invocable: false
 ---
 
