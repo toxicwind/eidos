@@ -132,8 +132,17 @@ async function main() {
       writeFileSync(dest, body);
       console.log(`  wrote ${dest}`);
     };
-    const { discoverDropins, renderDropinsToml } = await import("./scaffold-services.ts");
+    const { discoverDropins, infraDropins, renderDropinsToml } = await import("./scaffold-services.ts");
     write(`${TARGET}/bunfig.toml`, SCAFFOLD_BUNFIG);
+    if (DROPIN) {
+      // the AST validator rides the drop-in flow: every scaffolded product
+      // gets bin/{sg/r503.ts.yml, ast-check.sh} (the forge quality gate).
+      // emit-ast-validator is a CLI reading its own --target; spawn it.
+      const { spawnSync } = await import("node:child_process");
+      const emitter = join(import.meta.dir, "..", "bin", "emit-ast-validator.ts");
+      const ast = spawnSync("bun", [emitter, "--target", TARGET], { encoding: "utf8" });
+      console.log(`  [ast] ${ast.stdout?.trim() || ast.stderr?.trim() || "emitted"}`);
+    }
     if (DROPIN) {
       const dropins = discoverDropins();
       const env = renderDropinsToml(infraDropins());

@@ -36,7 +36,7 @@ const check = `#!/usr/bin/env bash
 set -e
 ROOT="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")/.." && pwd)"
 command -v ast-grep >/dev/null || { echo "ast-grep missing — bun x @ast-grep/cli"; exit 2; }
-ast-grep scan "\$ROOT" --rule "\$ROOT/bin/sg/r503.ts.yml" --no-interact
+ast-grep scan "\$ROOT" --rule "\$ROOT/bin/sg/r503.ts.yml"
 rc=\$?
 [ \$rc -eq 0 ] && echo "[ast-check] PASS" || echo "[ast-check] FINDINGS above (exit \$rc)"
 exit \$rc
