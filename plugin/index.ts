@@ -104,6 +104,35 @@ export default definePlugin({
             );
           },
         },
+        {
+          id: 'reactive_error',
+          summary: 'On tool error: classify the failure family, spawn a rig agent diagnosis, ledger the receipt.',
+          register: async (server) => {
+            server.registerTool(
+              `${prefix}_reactive_error`,
+              {
+                description: 'Reactive error diagnosis — feeds a tool error through the failure-family classifier (kernel-death / tool-deny / patch-miss / network) and returns the prescribed fix pattern.',
+                inputSchema: z.object({
+                  tool: z.string().describe('tool that errored'),
+                  error: z.string().describe('the error text'),
+                }),
+              },
+              async ({ tool, error }) => {
+                const { reactiveErrorPlugin } = await import('./reactive-error.ts');
+                const plugin = reactiveErrorPlugin({ dryRun: true });
+                const d = await plugin.postTool({
+                  hook_event_name: 'PostToolUse',
+                  tool_name: tool,
+                  tool_input: {},
+                  tool_response: { error },
+                });
+                return {
+                  content: [{ type: 'text' as const, text: JSON.stringify(d, null, 2) }],
+                };
+              },
+            );
+          },
+        },
       ],
       knowledge: [
         {
