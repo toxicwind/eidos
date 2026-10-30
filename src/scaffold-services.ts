@@ -1,36 +1,25 @@
+"use strict";
 /**
- * src/scaffold-services.ts — discover + wire INFRA DROP-INS for the bun
- * scaffold.
+ * src/scaffold-services.ts — drop-in infra-service wiring for the bun scaffold.
  *
- * CONCEPT: a "drop-in" is an estate infra service a scaffolded product can
- * connect to. They are NOT hardcoded per-product — they're DISCOVERED from
- * the estate's single source of truth:
+ * A "drop-in" is an estate infra service a scaffolded product can connect to.
+ * They are DISCOVERED, not hardcoded:
+ *   - config/ports.env (the numeric SSOT) — every *_PORT service
+ *   - pitchfork.toml      — the supervised daemon set
  *
- *   config/ports.env  -- every `*_PORT` service (numeric SSOT)
- *   pitchfork.toml    -- the supervised daemon set (+ their groups)
- *
- * `discoverDropins()` reads ports.env and returns every service with a
- * resolved port. Each becomes a drop-in ready to wire into a scaffolded
- * product's `[env]` (as `BUN_<NAME>=<port>`) or as a client-hint. The
- * four first-class infra tiers (qdrant/hindsight/kafka/redis) are given
- * richer metadata, but nothing stops any other supervised service
- * (e.g. thresher, vansrouter, xerj) from being a drop-in — they all live
- * in ports.env and all come in.
+ * Infra tiers are grouped by base id (qdrant_http/qdrant_grpc → qdrant) and
+ * the DEVICE tier (shizuku-backed pixel control) is first-class: every android
+ * entry drops into the ONE flotilla transport instead of none/ad-hoc adb.
  */
 import { existsSync, readFileSync } from "node:fs";
 
 const PORTS_ENV = "/home/toxic/pens/estate/config/ports.env";
 
 export interface DropinService {
-  /** Service id: the `*_PORT` name without the trailing _PORT (lowercase). */
   id: string;
-  /** Kind, for the client-hint. */
-  kind: "http" | "grpc" | "tcp" | "http-rest";
-  /** Port value from ports.env. */
+  kind: "http" | "grpc" | "tcp" | "http-rest" | "device";
   port: number;
-  /** Full env var name (BUN_<NAME>=<port>) a product exports. */
   envVar: string;
-  /** Client hint — which package/endpoint to use. */
   clientHint: string;
 }
 
@@ -49,33 +38,23 @@ export function parsePortsEnv(text: string): Record<string, number> {
   return out;
 }
 
-/** Known client hints per infra tier; other services get a generic one. */
+/** Client hints per infra tier; other services get a generic one. */
 const HINTS: Record<string, { kind: DropinService["kind"]; hint: string }> = {
   qdrant: { kind: "http-rest", hint: "vector store — use @qdrant/js-client-rest" },
   hindsight: { kind: "http", hint: "memory/session API — REST /" },
   kafka: { kind: "tcp", hint: "event stream — use kafkajs (Bun-compatible)" },
   redis: { kind: "tcp", hint: "valkey/redis protocol — use ioredis (Bun-compatible)" },
+  flotilla: { kind: "device", hint: "SHIZUKU-backed pixel device control (the one android transport; shizuku_mode default) — every android entry drops into THIS" },
 };
 
-/**
- * DISCOVER every drop-in: read ports.env, enumerate all *_PORT services,
- * resolve each to a DropinService with client hint. Sorted by id.
- */
-/**
- * Group a `*_PORT` env-var name onto its BASE service id. QDRANT_HTTP_PORT and
- * QDRANT_PORT are the SAME service (qdrant) with different endpoints, so they
- * must coalesce onto one id.
- */
+/** Coalesce *_PORT names onto their base service id (qdrant_http → qdrant). */
 function baseServiceId(name: string): string {
-  // name is like QDRANT_HTTP_PORT / QDRANT_GRPC_PORT / QDRANT_PORT / REDIS_PORT
-  const core = name.replace(/_PORT$/, ""); // QDRANT_HTTP, QDRANT, REDIS
-  // The infra tiers have well-known single-word bases; a compound like
-  // QDRANT_HTTP belongs to the FIRST segment. Generic *_PORT services (e.g.
-  // FLOTILLA_MCP_PORT) keep their full name as their own id.
+  const core = name.replace(/_PORT$/, "");
   const first = core.split("_")[0].toLowerCase();
   return core.includes("_") ? first : core.toLowerCase();
 }
 
+/** Discover every drop-in from ports.env, grouped by base id. */
 export function discoverDropins(portsEnvText?: string): DropinService[] {
   const text = portsEnvText ?? (existsSync(PORTS_ENV) ? readFileSync(PORTS_ENV, "utf8") : "");
   const ports = parsePortsEnv(text);
@@ -87,18 +66,22 @@ export function discoverDropins(portsEnvText?: string): DropinService[] {
       id,
       kind: meta.kind,
       port,
-      envVar: `BUN_${name}`, // BUN_QDRANT_HTTP_PORT
+      envVar: `BUN_${name}`,
       clientHint: meta.hint,
     });
   }
-  // sort by id then envVar so a service's endpoints stay grouped
   return out.sort((a, b) => (a.id + a.envVar).localeCompare(b.id + b.envVar));
 }
 
-/** The four first-class infra tiers (all their endpoints grouped by id). */
+/** The four infra tiers + the device tier (all endpoints grouped by id). */
 export function infraDropins(portsEnvText?: string): DropinService[] {
   const wanted = new Set(["qdrant", "hindsight", "kafka", "redis"]);
   return discoverDropins(portsEnvText).filter((d) => wanted.has(d.id));
+}
+
+/** The DEVICE tier: shizuku-backed pixel control — every android entry drops into flotilla. */
+export function deviceDropins(portsEnvText?: string): DropinService[] {
+  return discoverDropins(portsEnvText).filter((d) => d.kind === "device");
 }
 
 /** Render an `[env]` block for a scaffolded product's bunfig. */
@@ -110,4 +93,4 @@ export function renderDropinsToml(dropins: DropinService[]): string {
     .join("\n");
 }
 
-export const scaffoldServicesVersion = "1.1.0-dropin-discovery";
+export const scaffoldServicesVersion = "1.2.0-device-tier";
