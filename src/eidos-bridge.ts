@@ -1,8 +1,8 @@
 "use strict"; // CJS-free: run via bun. ESM below.
 /**
- * src/delendai-bridge.ts — completions via DelendAI's REAL llm-client
+ * src/delendai-bridge.ts — completions via hephaistos REAL llm-client (freeinference)
  * (freeinference deepseek). Single completions source: shells to
- * borrow/delendai/packages/cli/src/complete-bridge.mjs which imports
+ * ergasterion/hephaistos/packages/cli/src/complete-bridge.mjs which imports
  * DelendAI's callLlm. Removes the duplicate fetch in src/llm.ts.
  */
 import { execFile } from "node:child_process";
@@ -10,7 +10,7 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const DELENDAI_BRIDGE =
-  "/home/toxic/estate/ranch/borrowed/delendai/packages/cli/src/complete-bridge.mjs";
+  "/home/toxic/pens/ergasterion/hephaistos/packages/cli/src/complete-bridge.mjs";
 
 export interface ChatMsg {
   role: "system" | "user" | "assistant";

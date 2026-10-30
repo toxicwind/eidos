@@ -14,7 +14,7 @@
  * --llm (rides DelendAI lllm-client conventions + freeinference deepseek).
  */
 
-import { completeOver, type ChatMsg } from "./delendai-bridge";
+import { completeOver, type ChatMsg } from "./eidos-bridge";
 import { scanPackageJsons } from "./detect-bizarre-package-json";
 import {
   readFileSync,
