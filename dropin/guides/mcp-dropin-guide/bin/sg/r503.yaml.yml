@@ -1,0 +1,12 @@
+id: r503-hardcoded-github-url-yaml
+language: yaml
+severity: warning
+message: Hardcoded cross-repo GitHub URL (R-503) - reference by path, resolve via git remote get-url origin
+rule:
+  any:
+    - kind: double_quote_scalar
+      regex: 'github\.(com|io)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+'
+    - kind: single_quote_scalar
+      regex: 'github\.(com|io)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+'
+    - kind: plain_scalar
+      regex: 'github\.(com|io)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+'

@@ -1,0 +1,75 @@
+{
+  "product": "bun-scaffold",
+  "path": "/home/toxic/pens/ranch/products/bun-scaffold",
+  "files": 18,
+  "detected_at": "2026-10-30T06:11:06.054585Z",
+  "env_vars": {
+    "DEEPSEEK_API_KEY": [
+      "src/llm.ts"
+    ],
+    "DRY_RUN": [
+      "src/apply-scaffold.ts"
+    ],
+    "FREEINFERENCE_API_KEY": [
+      "src/llm.ts"
+    ],
+    "KILL_FLAG": [
+      "bin/watch-procs.sh"
+    ],
+    "ROOT": [
+      "src/apply-scaffold.ts",
+      "src/detect-bizarre-package-json.ts"
+    ],
+    "TARGET": [
+      "src/apply-scaffold.ts"
+    ],
+    "THRESHOLD_CPU": [
+      "bin/watch-procs.sh"
+    ],
+    "USE_LLM": [
+      "src/apply-scaffold.ts"
+    ],
+    "WATCH": [
+      "bin/watch-procs.sh"
+    ],
+    "WATCH_S": [
+      "bin/watch-procs.sh"
+    ],
+    "applied": [
+      "src/apply-scaffold.ts"
+    ],
+    "ciGreen": [
+      "src/adoption-score.ts"
+    ],
+    "commits": [
+      "src/adoption-score.ts"
+    ],
+    "dest": [
+      "src/apply-scaffold.ts"
+    ],
+    "gapCoverage": [
+      "src/adoption-score.ts"
+    ],
+    "gateScore": [
+      "src/adoption-score.ts"
+    ],
+    "kind": [
+      "src/detect-bizarre-package-json.ts"
+    ],
+    "msg": [
+      "src/apply-scaffold.ts"
+    ],
+    "security": [
+      "src/adoption-score.ts"
+    ],
+    "skipped": [
+      "src/apply-scaffold.ts"
+    ],
+    "target": [
+      "src/apply-scaffold.ts"
+    ],
+    "workspaceFolder": [
+      ".vscode/mcp.json"
+    ]
+  }
+}

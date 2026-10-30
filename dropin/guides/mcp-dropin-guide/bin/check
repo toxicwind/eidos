@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# mcp-dropin-guide — self-test gate (PASS/FAIL).
+# The guide's own machine gate: validates the convention (R-NNN ids, Gates,
+# Provenance, schema examples). 0 findings = PASS; any finding = FAIL.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+echo "== mcp-dropin-guide check: start =="
+command -v node >/dev/null 2>&1 || { echo "FAIL: node not found"; exit 1; }
+
+out="$(node bin/validate.js 2>&1)"
+echo "$out"
+echo "$out" | grep -qE "0 findings - OK" || { echo "FAIL: validate found issues"; exit 1; }
+
+echo "== mcp-dropin-guide check: PASS =="

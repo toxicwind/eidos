@@ -1,0 +1,9 @@
+# bun-scaffold — build/scan artifacts & deps never tracked
+node_modules/
+.ffs/
+dist/
+build/
+*.log
+docs/delendai/host-hints/
+.env
+.env.*

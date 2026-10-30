@@ -1,0 +1,42 @@
+{
+  "name": "@estate/bun-scaffold",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Maximal Bun scaffold: copy-paste package.json + bunfig.toml + gate (validate/test:coverage/typecheck) + a freeinference deepseek completions helper for applying it across estate projects.",
+  "license": "MIT",
+  "engines": {
+    "bun": ">=1.4.4",
+    "node": ">=20"
+  },
+  "packageManager": "bun@1.4.4",
+  "workspaces": [
+    "examples/*"
+  ],
+  "scripts": {
+    "validate": "bun run typecheck && bun run test:coverage && bun run lint",
+    "typecheck": "tsgo --noEmit -p tsconfig.json",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "coverage:ratchet": "bun test --coverage --coverage.reporter=json-summary && bun x vyper-spec coverage:ratchet",
+    "lint": "bun x biome check src tests",
+    "apply:scaffold": "bun src/apply-scaffold.ts",
+    "scaffold:detect": "bun src/detect-bizarre-package-json.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "*",
+    "@types/bun": "^1.4.0",
+    "@types/node": "^22.0.0",
+    "@typescript/native-preview": "*",
+    "typescript": "^5.7.0"
+  },
+  "keywords": [
+    "bun",
+    "scaffold",
+    "bunfig",
+    "monorepo",
+    "validate",
+    "coverage",
+    "completions"
+  ]
+}

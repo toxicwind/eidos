@@ -1,0 +1,4 @@
+[tasks]
+run = "bin/run"
+check = "bin/check"
+validate = "node bin/validate.js"

@@ -1,0 +1,7 @@
+id: r503-hardcoded-github-url-json
+language: json
+severity: warning
+message: Hardcoded cross-repo GitHub URL (R-503) - reference by path, resolve via git remote get-url origin
+rule:
+  kind: string
+  regex: 'github\.(com|io)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+'
