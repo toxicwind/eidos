@@ -1,115 +1,115 @@
 /**
  * plugin/index.ts — eidos (εἶδος) as a hephaistos first-party plugin.
  *
- * eidos = the FORGE: bun-scaffold's form-stamping, drop-in discovery, and
- * AST-grep validation, exposed as MCP tools THROUGH hephaistos' core. This is
- * the "MCP is the integration" doctrine: eidos doesn't bolt onto hephaistos —
- * it plugs into @hephaistos/core as an IMcpPlugin, so the scaffold's
- * capabilities appear as hephaistos MCP tools to any agent.
+ * VERIFIED against the consent plugin (the contract's reference shape):
+ *   tools: [{ id, summary, register: async (server) => server.registerTool(
+ *              `${ctx.namespacePrefix}_<tool>`, { description, inputSchema: z.object({...}) },
+ *              handler) }]
+ *   — NOT { name, description, inputSchema, handler } (my first guess was wrong).
  *
- * Contract notes (from @hephaistos plugin-contract.ts):
- *  - plugin must be pure: register(ctx) gets everything (workspace, options);
- *    NEVER read process.cwd/argv directly.
- *  - mutations go through ctx.effects (dry-run-gated).
- *  - options come from hephaistos.config.json#plugins.eidos.options.
+ * eidos = the FORGE: bun-scaffold's form-stamping, drop-in discovery, and
+ * AST-grep validation as hephaistos MCP tools. MCP is the integration.
  */
-import { z } from "zod";
-import { definePlugin, type IMcpPluginContext, type IMcpPluginRegistrations } from "@hephaistos/core";
-import { discoverDropins, infraDropins } from "../src/scaffold-services.ts";
+import { z } from 'zod';
+import { definePlugin, type IMcpPluginContext, type IMcpPluginRegistrations } from '@hephaistos/core';
+import { discoverDropins, infraDropins } from '../src/scaffold-services.ts';
 
-export const name = "eidos";
+export const name = 'eidos';
 
 const optionsSchema = z.object({
-  /** Pens root to discover drop-ins from. */
-  pensRoot: z.string().default("/home/toxic/pens"),
-  /** Emit BUN_*_PORT env into scaffolded bunfig (default true). */
+  pensRoot: z.string().default('/home/toxic/pens'),
   emitDropinEnv: z.boolean().default(true),
 });
 
 export default definePlugin({
   name,
-  version: "1.0.0",
+  version: '1.0.0',
   describe:
-    "εἶδος — the forge. Scaffold form-stamping, drop-in discovery, AST-grep validation, as hephaistos MCP tools.",
+    'εἶδος — the forge: scaffold form-stamping, drop-in discovery, AST-grep validation as hephaistos MCP tools.',
   optionsSchema,
-  example: { pensRoot: "/home/toxic/pens", emitDropinEnv: true },
-  configExample: {
-    example: JSON.stringify({ pensRoot: "/home/toxic/pens", emitDropinEnv: true }),
-  },
+  example: { pensRoot: '/home/toxic/pens', emitDropinEnv: true },
 
   register(ctx: IMcpPluginContext): IMcpPluginRegistrations {
-    const opts = optionsSchema.safeParse(ctx.options);
-    const pensRoot = opts.success ? opts.data.pensRoot : "/home/toxic/pens";
-    const emitEnv = opts.success ? opts.data.emitDropinEnv : true;
+    const parsed = optionsSchema.safeParse(ctx.options);
+    const pensRoot = parsed.success ? parsed.data.pensRoot : '/home/toxic/pens';
+    const prefix = ctx.namespacePrefix || 'eidos';
 
     return {
       tools: [
         {
-          name: "eidos_discover_dropins",
-          description:
-            "List every estate infra drop-in as BUN_<NAME>_PORT connection vars, discovered from config/ports.env",
-          inputSchema: {
-            type: "object",
-            properties: { infraOnly: { type: "boolean", description: "only qdrant/hindsight/kafka/redis" } },
-          },
-          handler: async (args: { infraOnly?: boolean } = {}) => {
-            const dropins = args.infraOnly ? infraDropins() : discoverDropins();
-            return {
-              content: [{
-                type: "text" as const,
-                text: JSON.stringify(dropins.map((d) => ({ id: d.id, env: d.envVar, port: d.port, hint: d.clientHint })), null, 2),
-              }],
-            };
-          },
-        },
-        {
-          name: "eidos_scaffold_plan",
-          description:
-            "Emit the four drop-in wiring stanzas (ports.env, pitchfork monolith, thresher config, bunfig env) for a named drop-in",
-          inputSchema: {
-            type: "object",
-            properties: {
-              name: { type: "string", description: "drop-in name, e.g. flotilla" },
-              run: { type: "string", description: "exec command (bun <server>)" },
-              mcpPath: { type: "string", description: "default /mcp" },
-            },
-            required: ["name", "run"],
-          },
-          handler: async (args: { name: string; run: string; mcpPath?: string }) => {
-            const { borrowDropinPlan } = await import("../dropin/borrow-dropin.ts");
-            const plan = borrowDropinPlan({ ...args, mcpPath: args.mcpPath ?? "/mcp" });
-            return {
-              content: [{
-                type: "text" as const,
-                text: `# ${args.name} drop-in plan\n\n<ports.env>\n${plan.portsEnv}\n<pitchfork>\n${plan.pitchfork}\n<thresher>\n${plan.thresher}`,
-              }],
-            };
+          id: 'discover_dropins',
+          summary: 'List every estate infra drop-in as BUN_<NAME>_PORT connection vars (from ports.env).',
+          register: async (server) => {
+            server.registerTool(
+              `${prefix}_discover_dropins`,
+              {
+                description: 'Discover estate infra drop-ins (qdrant/hindsight/kafka/redis + all *_PORT services) as connection env.',
+                inputSchema: z.object({
+                  infraOnly: z.boolean().optional().describe('only the four infra tiers'),
+                }),
+              },
+              async ({ infraOnly }: { infraOnly?: boolean }) => {
+                const dropins = infraOnly ? infraDropins() : discoverDropins();
+                return {
+                  content: [{ type: 'text' as const, text: JSON.stringify(
+                    dropins.map((d) => ({ id: d.id, env: d.envVar, port: d.port, hint: d.clientHint })), null, 2) }],
+                };
+              },
+            );
           },
         },
         {
-          name: "eidos_validate_ast",
-          description:
-            "AST-grep structural validation of a path (the forge's quality gate) — proves code shape, not just text",
-          inputSchema: {
-            type: "object",
-            properties: {
-              path: { type: "string", description: "abs path to scan" },
-              pattern: { type: "string", description: "ast-grep pattern" },
-              lang: { type: "string", description: "language override (ts/cpp/...)" },
-            },
-            required: ["path", "pattern"],
+          id: 'scaffold_plan',
+          summary: 'Emit the four drop-in wiring stanzas (ports.env, pitchfork monolith, thresher config, bunfig env).',
+          register: async (server) => {
+            server.registerTool(
+              `${prefix}_scaffold_plan`,
+              {
+                description: 'Drop-in wiring plan: ports.env + pitchfork monolith + thresher config + bunfig env.',
+                inputSchema: z.object({
+                  name: z.string().describe('drop-in name, e.g. flotilla'),
+                  run: z.string().describe('exec command (bun <server>)'),
+                  mcpPath: z.string().optional().describe('default /mcp'),
+                }),
+              },
+              async ({ name: n, run, mcpPath }) => {
+                const { borrowDropinPlan } = await import('../dropin/borrow-dropin.ts');
+                const plan = borrowDropinPlan({ name: n, run, mcpPath: mcpPath ?? '/mcp' });
+                return {
+                  content: [{ type: 'text' as const, text: `# ${n} drop-in plan\n\n<ports.env>\n${plan.portsEnv}\n<pitchfork>\n${plan.pitchfork}\n<thresher>\n${plan.thresher}` }],
+                };
+              },
+            );
           },
-          handler: async () => {
-            // AST validation is handled via the ast-grep substrate; surface intent.
-            return { content: [{ type: "text" as const, text: "eidos_validate_ast ready (ast-grep substrate)." }] };
+        },
+        {
+          id: 'validate_ast',
+          summary: 'AST-grep structural validation (the forge quality gate) — code shape, not text.',
+          register: async (server) => {
+            server.registerTool(
+              `${prefix}_validate_ast`,
+              {
+                description: 'ast-grep structural scan of a path (r503 pattern: no process.cwd, ctx-only doctrine).',
+                inputSchema: z.object({
+                  path: z.string().describe('abs path to scan'),
+                  pattern: z.string().describe('ast-grep pattern'),
+                  lang: z.string().optional(),
+                }),
+              },
+              async ({ path, pattern }) => {
+                const { $ } = await import('bun');
+                const out = await $`ast-grep scan ${path} --rule ${pattern}`.quiet().nothrow().text();
+                return { content: [{ type: 'text' as const, text: out || '(no matches)' }] };
+              },
+            );
           },
         },
       ],
       knowledge: [
         {
-          name: "eidos-forge-doctrine",
+          name: 'eidos-forge-doctrine',
           content:
-            "eidos (the forge) scaffolds form + discovers drop-ins. Parent of 27 products; 132 infra services discoverable from ports.env. Mutations via ctx.effects; options from hephaistos.config.json#plugins.eidos.",
+            'eidos (the forge) scaffolds form + discovers drop-ins. Parent of 27 products; 132 infra services from ports.env. Mutations via ctx.effects; options from hephaistos.config.json#plugins.eidos. Verified against the consent plugin contract shape.',
         },
       ],
     };
