@@ -40,7 +40,7 @@ bunfig [env]       BUN_<NAME>_PORT (from discoverDropins)        [scaffold]
   `Content-Length: <bytes>\r\n\r\n<json>` (R-101). Newline-only peers connect
   but expose zero tools.
 - **Thresher is the gateway** — NO agent-mcp-gateway layer (R-304).
-- **Live config only** — thresher config = `/home/toxic/estate/ranch/thresher/mcp_config.json`
+- **Live config only** — thresher config = `/home/toxic/pens/estate/ranch/thresher/mcp_config.json`
   (verify via `/proc/<pid>/cmdline`); the ranch copy is a stale mirror.
 - **Edition is additive** — ports.env + pitchfork MONOLITH + new daemon. Never
   `pitchfork.d` fragments, never deprecate keys.

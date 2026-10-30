@@ -25,7 +25,7 @@ import { join, dirname } from "node:path";
 
 const rootArgIdx = process.argv.indexOf("--root");
 const ROOT =
-  rootArgIdx !== -1 ? process.argv[rootArgIdx + 1] : "/home/toxic/estate/ranch";
+  rootArgIdx !== -1 ? process.argv[rootArgIdx + 1] : "/home/toxic/pens/estate/ranch";
 const JSON_OUT = process.argv.includes("--json");
 
 function isDir(p: string) {

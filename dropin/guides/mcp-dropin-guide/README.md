@@ -74,7 +74,7 @@ process.stdout.write(JSON.stringify(res) + "\n");
 
 ### R-3xx: Registration & thresher
 
-**R-301.** Every MCP server must be registered in thresher `mcp_config.json` (`/home/toxic/estate/ranch/barn/thresher/mcp_config.json`) with `command`, `args`, `enabled: true`, and `timeout`. The path must point to an existing file.
+**R-301.** Every MCP server must be registered in thresher `mcp_config.json` (`/home/toxic/pens/estate/ranch/barn/thresher/mcp_config.json`) with `command`, `args`, `enabled: true`, and `timeout`. The path must point to an existing file.
 
 *Why.* Thresher reads `mcp_config.json` to discover servers. Missing or wrong paths cause "failed to connect" errors and retry loops. All MCP servers must be registered directly in thresher - there is no separate agent-mcp-gateway layer. (Provenance: estate-original, incident 2026-10-16.)
 

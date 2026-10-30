@@ -18,8 +18,8 @@
 import { discoverDropins, infraDropins } from "../src/scaffold-services.ts";
 import { suggestFreePort } from "./borrow-dropin.ts";
 
-const PITCHFORK = "/home/toxic/estate/pitchfork.toml";
-const THRESHER = "/home/toxic/estate/ranch/thresher/mcp_config.json";
+const PITCHFORK = "/home/toxic/pens/estate/pitchfork.toml";
+const THRESHER = "/home/toxic/pens/estate/ranch/thresher/mcp_config.json";
 
 export interface HephaistosDropinSpec {
   name: string;              // product name → <name>-mcp daemon

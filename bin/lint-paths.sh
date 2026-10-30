@@ -16,7 +16,7 @@ fi
 for pen in $PENS; do
   hits="$(rg -l --no-ignore --hidden -g '!.git' -g '!node_modules' -g '!vendor*' \
     -g '!qdrant_data' -g '!grafana' -g '!bun.lock' -g '!*.lock' \
-    '/home/toxic/estate' "$PENS_DIR/$pen" 2>/dev/null)"
+    '/home/toxic/pens/estate' "$PENS_DIR/$pen" 2>/dev/null)"
   if [ -n "$hits" ]; then
     echo "FAIL: $pen references banned ghost path /home/toxic/estate:"
     echo "$hits" | sed 's/^/  /'

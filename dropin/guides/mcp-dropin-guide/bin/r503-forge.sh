@@ -13,7 +13,7 @@ shift || true
 
 # Name de-conflict: /usr/bin/forge is the BUILD DAEMON (pitchfork estate/forge).
 # This script needs the pattern-forge CLI (forge audit = ast-grep verification).
-FORGE="${FORGE_BIN:-/home/toxic/estate/skills/pattern-forge/bin/forge.ts}"
+FORGE="${FORGE_BIN:-/home/toxic/pens/estate/skills/pattern-forge/bin/forge.ts}"
 if ! command -v "$FORGE" >/dev/null 2>&1 && [[ ! -x "$FORGE" ]]; then
   echo "pattern-forge not found (set FORGE_BIN)" >&2
   exit 2

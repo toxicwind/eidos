@@ -2,7 +2,7 @@
  * src/apply-scaffold.ts — apply the maximal bun scaffold to estate projects.
  *
  * Options:
- *   --root <dir>      subtree to scan (default /home/toxic/estate/ranch)
+ *   --root <dir>      subtree to scan (default /home/toxic/pens/estate/ranch)
  *   --target <dir>    apply ONLY to this project dir (skip LLM detection)
  *   --llm             for each package.json, ask freeinference deepseek v4 flash
  *                     to produce the maximal scaffold patch (default ON for scan)
@@ -31,7 +31,7 @@ const SCAFFOLD_BUNFIG = readFileSync(
 );
 const rootArgIdx = process.argv.indexOf("--root");
 const ROOT =
-  rootArgIdx !== -1 ? process.argv[rootArgIdx + 1] : "/home/toxic/estate/ranch";
+  rootArgIdx !== -1 ? process.argv[rootArgIdx + 1] : "/home/toxic/pens/estate/ranch";
 const targetArgIdx = process.argv.indexOf("--target");
 const TARGET = targetArgIdx !== -1 ? process.argv[targetArgIdx + 1] : null;
 const USE_LLM = process.argv.includes("--llm");

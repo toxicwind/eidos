@@ -46,11 +46,24 @@
  * NEVER removes `products/`, `docs/`, or anything else. There is no code path
  * that deletes a pen. To truly reset a pen, a human does it deliberately.
  */
-import { mkdir, readdir } from "node:fs/promises";
-import { join, dirname, resolve } from "node:path";
+import { mkdirSync, readdirSync, writeFileSync, existsSync } from "node:fs";
+import { basename, join, dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const here = import.meta.dir; // Bun-native: no fileURLToPath ceremony
-const PENS_ROOT = resolve(here, "../../.."); // pens/
+const here = dirname(fileURLToPath(import.meta.url));
+// Walk UP from bin/ until we find the directory actually named "pens" —
+// a fixed "../../.." count broke when the scaffold moved nesting depth
+// (pens/scaffold/bin resolved to /home, and mkdir tried /home/dedicated).
+function findPensRoot(start: string): string {
+	let dir = start;
+	while (dir !== "/") {
+		if (dir.endsWith("/pens") && existsSync(join(dir, "pens.yaml"))) return dir;
+		if (basename(dir) === "pens") return dir;
+		dir = dirname(dir);
+	}
+	throw new Error("could not locate pens/ root from scaffold location");
+}
+const PENS_ROOT = findPensRoot(here);
 
 interface Options {
   pen: string;
@@ -236,19 +249,22 @@ index.
 `;
 }
 
-async function writeFile(path: string, content: string): Promise<void> {
-  await mkdir(dirname(path), { recursive: true });
-  await Bun.write(path, content); // Bun-native atomic write
+function writeFile(path: string, content: string): void {
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, content, "utf8");
 }
 
-async function main(): Promise<void> {
+function main(): void {
   const o = parseArgs();
   const root = join(PENS_ROOT, o.pen);
   const products = join(root, "products");
 
   // SAFETY: never delete a pen. --force only overwrites metadata.
-  try {
-    const existing = await readdir(products);
+  if (existsSync(products)) {
+    // fs is already imported at module top — a dynamic await import here made
+    // main() a syntax error (await inside non-async fn) and the scaffold
+    // unrunnable for any pen.
+    const existing = readdirSync(products);
     if (existing.length > 0 && !o.force) {
       console.log(
         `[make-pen] ${root}/products/ already has ${existing.length} entries — ` +
@@ -256,19 +272,17 @@ async function main(): Promise<void> {
       );
       return;
     }
-  } catch {
-    // products/ does not exist yet — fresh pen, fine.
   }
 
-  await mkdir(products, { recursive: true });
-  await mkdir(join(root, "docs"), { recursive: true });
-  await mkdir(join(root, "bin"), { recursive: true });
+  mkdirSync(products, { recursive: true });
+  mkdirSync(join(root, "docs"), { recursive: true });
+  mkdirSync(join(root, "bin"), { recursive: true });
 
-  await writeFile(join(root, ".gitignore"), gitignore(o.title));
-  await writeFile(join(root, "README.md"), readme(o));
-  await writeFile(join(root, "package.json"), packageJson(o));
-  await writeFile(join(root, "mise.toml"), miseToml(o));
-  await writeFile(join(root, "AGENTS.md"), agentsMd(o));
+  writeFile(join(root, ".gitignore"), gitignore(o.title));
+  writeFile(join(root, "README.md"), readme(o));
+  writeFile(join(root, "package.json"), packageJson(o));
+  writeFile(join(root, "mise.toml"), miseToml(o));
+  writeFile(join(root, "AGENTS.md"), agentsMd(o));
 
   console.log(`✔ pen scaffold ready: pens/${o.pen}`);
   console.log(`  · metadata written; products/ left untouched`);
@@ -276,4 +290,4 @@ async function main(): Promise<void> {
   console.log(`  · clone products into products/<name>/ (auto-ignored)`);
 }
 
-await main();
+main();

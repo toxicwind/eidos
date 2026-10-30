@@ -31,7 +31,7 @@ export interface DropinSpec {
 const PORTS_ENV = "/home/toxic/pens/estate/config/ports.env";
 const PITCHFORK = "/home/toxic/pens/estate/pitchfork.toml";
 // live thresher config — the estate clone, NOT the stale ranch mirror
-const THRESHER = "/home/toxic/estate/ranch/thresher/mcp_config.json";
+const THRESHER = "/home/toxic/pens/estate/ranch/thresher/mcp_config.json";
 
 /** Next free port suggestion in the estate 25xxx range. */
 export function suggestFreePort(existing: number[] = []): number {

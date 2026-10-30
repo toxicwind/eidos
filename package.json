@@ -38,5 +38,8 @@
     "validate",
     "coverage",
     "completions"
-  ]
+  ],
+  "dependencies": {
+    "neverthrow": "8.2.0"
+  }
 }
