@@ -108,6 +108,22 @@ async function main() {
   }
 
   if (TARGET) {
+    // Rust fast-build drop-in first: a Rust-only project has no package.json,
+    // so the Bun gate below must not run before it. Applies the release-fast
+    // profile (thin LTO + 8 units + mold-friendly) when Cargo.toml exists;
+    // idempotent; "skip"/non-Rust quiet no-op.
+    if (existsSync(`${TARGET}/Cargo.toml`)) {
+      const { applyRustFastBuild } = await import("../dropin/rust-fast-build-lib-dropin.ts");
+      banner(`rust fast-build ${TARGET}`);
+      const r = applyRustFastBuild(TARGET);
+      r.match(
+        (s) => console.log(`  [rust-fast-build] ${s}`),
+        (e) => console.log(`  [rust-fast-build] error: ${e.message}`),
+      );
+      // Rust-only target: done after the Cargo profile drop-in (no bunfig).
+      if (!existsSync(`${TARGET}/package.json`)) return;
+    }
+
     // Single-project apply: install the scaffold files (only if real bun).
     const pkgPath = existsSync(`${TARGET}/package.json`)
       ? `${TARGET}/package.json`

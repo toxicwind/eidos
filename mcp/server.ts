@@ -36,7 +36,7 @@ function runTool(
 		// Route by extension: .sh → bash, .ts → bun (scaffold bin mixes both)
 		const cmd = target.endsWith(".sh") ? ["bash", target] : ["bun", target];
 		const proc = Bun.spawn([...cmd, ...args], {
-			cwd: "/home/toxic/pens/toolkit/scaffold",
+			cwd: "/home/toxic/pens/ergasterion/eidos",
 			stdout: "pipe",
 			stderr: "pipe",
 		});
@@ -113,7 +113,7 @@ async function dispatch(
 	args: Record<string, unknown>,
 ): Promise<Result<ToolOut, ScaffoldErr>> {
 	const pen = String(args.pen ?? "");
-	const BIN = "/home/toxic/pens/toolkit/scaffold/bin";
+	const BIN = "/home/toxic/pens/ergasterion/eidos/bin";
 	switch (name) {
 		case "scaffold_audit":
 			return await runTool(`${BIN}/audit-pen.sh`, [pen]);
