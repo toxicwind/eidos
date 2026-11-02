@@ -24,6 +24,7 @@ and gets working capability with zero engine wiring.
 | `tdd-adapter-lib-dropin.ts` | compforge/devloop `hook-payload.ts` | Hook payload shape + tool-error detection (PreToolUse/PostToolUse) |
 | `rig-skills-lib-dropin.ts` | LerianStudio/ring | 89 skills indexed as knowledge drop-ins + best-match |
 | `model-matrix-lib-dropin.ts` | this session's read-tool matrix | 5-lane model contract parity probe (see below) |
+| `rust-fast-build-lib-dropin.ts` | rhodochrosite proxy build (verified 2026-11-02) | `release-fast` Cargo profile (thin LTO + 8 units + opt-2) — the ~40s mold incremental loop vs the fat-LTO 2-5min lock; applied by `apply-eidos --target` for any Rust project |
 
 ## model-matrix — why THOSE five models
 
