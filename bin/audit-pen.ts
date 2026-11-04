@@ -21,7 +21,7 @@ const META = [
 	"AGENTS.md",
 	"pitchfork.toml",
 ] as const;
-const GHOST = "/home/toxic/pens/estate";
+const GHOST = "/home/toxic/estate";
 
 let overall = 0;
 const pens =
